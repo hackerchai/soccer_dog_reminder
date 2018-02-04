@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="1f0845a4-1779-44ed-aab9-454db470c7bb" name="Aliyun Server 1" url="https://dev1.hackerchai.com">
+        <fileTransfer host="dev1.hackerchai.com" port="22" rootFolder="/home/soccer_dog_reminder" accessType="SFTP" authAgent="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
