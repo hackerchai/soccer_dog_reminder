@@ -21,7 +21,7 @@ def main():
         phone = 1234567890
 
         message = club_match_query(football_api_appkey, football_club).encode('utf-8')
-        if message:
+        if message != "no recent match":
             sms_send(sms_api_appcode, sms_api_appskin, phone, message)
         else:
             print "no recent match"
@@ -86,7 +86,8 @@ def club_match_query(football_api_appkey, football_club):
                     gap_time_hours)
                 return message
             else:
-                pass
+                message = "no recent match"
+                return message
         else:
             print "%s:%s" % (football_match_data["error_code"], football_match_data["reason"])
     else:
