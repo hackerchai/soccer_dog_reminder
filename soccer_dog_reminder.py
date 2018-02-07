@@ -20,7 +20,7 @@ def main():
         football_club = ""
         phone = 1234567890
 
-        message = club_match_query(football_api_appkey, football_club).encode('utf-8')
+message = club_match_query(football_api_appkey, football_club).encode('utf-8')
         if message != "no recent match":
             sms_send(sms_api_appcode, sms_api_appskin, phone, message)
         else:
@@ -73,16 +73,25 @@ def club_match_query(football_api_appkey, football_club):
             (match_month, match_day) = match_date.split("-")
             (match_hour, match_minute) = match_time.split(":")
 
-            current_time_h = datetime.datetime.now()
-            match_time_h = datetime.datetime(int(current_time_h.year), int(match_month), int(match_day),
-                                             int(match_hour), int(match_minute), 0, 0)
-            gap_time_days = (match_time_h - current_time_h).days
+            print match_day
+            print match_month
+            print match_hour
+            print match_minute
+
+            current_time_d = date.today()
+            match_time_d = date(int(current_time_d.year), int(match_month), int(match_day))
+
+            gap_time_days = (match_time_d - current_time_d).days
+            print gap_time_days
 
             if gap_time_days <= 1:
+                current_time_h = datetime.datetime.now()
+                match_time_h = datetime.datetime(int(current_time_h.year), int(match_month), int(match_day),
+                                                 int(match_hour), int(match_minute), 0, 0)
                 gap_time_seconds = (match_time_h - current_time_h).seconds
-                gap_time_hours = (gap_time_seconds / 3600) + gap_time_days * 24
+                gap_time_hours = gap_time_seconds / 3600
                 print gap_time_hours
-                message = football_club_d + u'|' + match_type + u'|' + match_opponent + u'|' + match_month + u'月' + match_day + u'日' + match_hour + u'时' + match_minute + u'分' + u'|' + unicode(
+                message = football_club + '|' + match_type + '|' + match_opponent + '|' + match_month + '月' + match_day + '日' + match_hour + '时' + match_minute + '分' + '|' + str(
                     gap_time_hours)
                 return message
             else:
