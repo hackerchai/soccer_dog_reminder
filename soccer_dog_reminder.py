@@ -3,7 +3,7 @@
 import json, urllib, urllib2, datetime, traceback, sys
 from urllib import urlencode
 from urllib2 import Request, urlopen
-
+from datetime import date
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -14,15 +14,16 @@ def main():
 
         football_api_appkey = ""
 
-        sms_api_appcode = ""
-        sms_api_appskin = 0000
+        sms_api_appcode = ''
+        sms_api_appskin = 'TP********'
 
-        football_club = ""
-        phone = 1234567890
+        football_club = "巴塞罗那"
+        phone = 123456789
 
-message = club_match_query(football_api_appkey, football_club).encode('utf-8')
+        message = club_match_query(football_api_appkey, football_club).encode('utf-8')
         if message != "no recent match":
             sms_send(sms_api_appcode, sms_api_appskin, phone, message)
+
         else:
             print "no recent match"
 
@@ -82,17 +83,18 @@ def club_match_query(football_api_appkey, football_club):
             match_time_d = date(int(current_time_d.year), int(match_month), int(match_day))
 
             gap_time_days = (match_time_d - current_time_d).days
-            print gap_time_days
 
             if gap_time_days <= 1:
                 current_time_h = datetime.datetime.now()
                 match_time_h = datetime.datetime(int(current_time_h.year), int(match_month), int(match_day),
                                                  int(match_hour), int(match_minute), 0, 0)
                 gap_time_seconds = (match_time_h - current_time_h).seconds
-                gap_time_hours = gap_time_seconds / 3600
+                gap_time_days = (match_time_h - current_time_h).days
+                gap_time_hours = gap_time_seconds / 3600 + gap_time_days * 24
                 print gap_time_hours
-                message = football_club + '|' + match_type + '|' + match_opponent + '|' + match_month + '月' + match_day + '日' + match_hour + '时' + match_minute + '分' + '|' + str(
+                message = "team1:"+football_club + ','  + "team2:"+match_opponent + ',' +"type:" + match_type + ',' + "date:" +match_month + "月" + match_day + "日" + match_hour + "时" + match_minute + "分" + ',' + "hour:" + str(
                     gap_time_hours)
+                print message
                 return message
             else:
                 message = "no recent match"
@@ -104,27 +106,29 @@ def club_match_query(football_api_appkey, football_club):
 
 
 def sms_send(sms_api_appcode, sms_api_appskin, phone, message):
-    sms_api_url_pre = 'http://fesms.market.alicloudapi.com'
-    sms_api_url_path = '/smsmsg'
+    sms_api_url_pre = 'http://dingxin.market.alicloudapi.com'
+    sms_api_url_path = '/dx/sendSms'
     sms_api_params = {
         "param": message,
-        "phone": phone,
-        "skin": sms_api_appskin,
+        "mobile": phone,
+        "tpl_id": sms_api_appskin,
     }
-    sms_api_querys = urlencode(sms_api_params)
-    sms_api_url = sms_api_url_pre + sms_api_url_path + '?' + sms_api_querys
+    sms_api_url = sms_api_url_pre + sms_api_url_path
 
-    sms_api_request = Request(sms_api_url)
-    sms_api_request.add_header('Authorization', 'APPCODE ' + sms_api_appcode)
+    sms_api_en_params = urlencode(sms_api_params)
+    sms_api_header = { 'Authorization' : 'APPCODE ' + sms_api_appcode}
+
+    sms_api_request = Request(sms_api_url,sms_api_en_params,sms_api_header)
     sms_api_response = urlopen(sms_api_request)
     sms_api_content = sms_api_response.read()
     sms_return_data = json.loads(sms_api_content)
+    #print sms_return_data
     if sms_return_data:
-        error_code = sms_return_data["Code"]
-        if error_code == "OK":
+        error_code = sms_return_data["return_code"]
+        if error_code == "00000":
             print "SMS is sent successfully"
         else:
-            print sms_return_data["Message"]
+            print sms_return_data["order_id"]
     else:
         print "request sms api error"
 
